@@ -1,3 +1,4 @@
+const { response } = require('express');
 const express = require('express');
 const { v4: uuidV4 } = require('uuid');
 
@@ -30,7 +31,7 @@ function getBalance(statement) {
     } else {
       return acc - operation.amount;
     }
-  }, 0);
+  }, 2);
 
   return balance;
 }
@@ -101,5 +102,18 @@ app.post('/withdraw', verifyIfExistsAccountCPF, (request, response) => {
   return response.status(201).send();
 });
 
+app.get('/statement/date', verifyIfExistsAccountCPF, (request, response) => {
+  const { customer } = request;
+  const { date } = request.query;
+
+  const dateFormat = new Date(date + " 00:00");
+  const statement = customer.statement.filter(
+    (statement) => 
+    statement.createdAt.toDateString() === new Date(dateFormat).toDateString()
+  );
+
+  return response.json(statement);
+});
+
 //Server
-app.listen(3333)
+app.listen(3335)
