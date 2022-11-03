@@ -1,4 +1,3 @@
-const { response } = require('express');
 const express = require('express');
 const { v4: uuidV4 } = require('uuid');
 
@@ -31,7 +30,7 @@ function getBalance(statement) {
     } else {
       return acc - operation.amount;
     }
-  }, 2);
+  }, 0);
 
   return balance;
 }
@@ -130,5 +129,21 @@ app.get('/account', verifyIfExistsAccountCPF, (request, response) => {
   return response.json(customer);
 });
 
+app.delete('/account', verifyIfExistsAccountCPF, (request, response) => {
+  const { customer } = request;
+
+  customers.splice(customer, 1);
+
+  return response.status(204).send();
+});
+
+app.get('/balance', verifyIfExistsAccountCPF, (request, response) => {
+  const { customer } = request;
+
+  const balance = getBalance(customer.statement);
+
+  return response.json(balance);
+});
+
 //Server
-app.listen(3335)
+app.listen(3335);
